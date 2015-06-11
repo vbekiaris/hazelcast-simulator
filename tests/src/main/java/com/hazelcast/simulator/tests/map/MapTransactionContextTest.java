@@ -14,6 +14,7 @@ import com.hazelcast.simulator.test.annotations.Warmup;
 import com.hazelcast.simulator.tests.helpers.TxnCounter;
 import com.hazelcast.simulator.utils.ThreadSpawner;
 import com.hazelcast.transaction.TransactionContext;
+import com.hazelcast.transaction.TransactionOptions;
 
 import java.util.Random;
 
@@ -32,10 +33,12 @@ public class MapTransactionContextTest {
 
     // properties
     public String basename = this.getClass().getSimpleName();
-    public int threadCount = 3;
-    public int keyCount = 10;
+    public int threadCount = 40;
+    public int keyCount = 100;
     public boolean rethrowAllException = false;
     public boolean rethrowRollBackException = false;
+    public TransactionOptions.TransactionType transactionType = TransactionOptions.TransactionType.TWO_PHASE;
+    public int durability = 1;
 
     private HazelcastInstance targetInstance;
     private TestContext testContext;
@@ -71,14 +74,17 @@ public class MapTransactionContextTest {
 
         @Override
         public void run() {
+            TransactionOptions options = new TransactionOptions()
+                    .setTransactionType(transactionType)
+                    .setDurability(durability);
+
             while (!testContext.isStopped()) {
                 TransactionContext context = null;
 
                 final int key = random.nextInt(keyCount);
                 final long increment = random.nextInt(100);
                 try {
-                    context = targetInstance.newTransactionContext();
-
+                    context = targetInstance.newTransactionContext(options);
                     context.beginTransaction();
 
                     final TransactionalMap<Integer, Long> map = context.getMap(basename);
