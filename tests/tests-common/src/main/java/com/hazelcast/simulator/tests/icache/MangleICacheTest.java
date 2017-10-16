@@ -43,10 +43,10 @@ import static com.hazelcast.simulator.tests.helpers.HazelcastTestUtils.rethrow;
 public class MangleICacheTest extends AbstractTest {
 
     // properties
-    public int maxCaches = 100;
+    public int maxCaches = 10;
     public int keyCount = 100000;
     // used to randomize cache manager names
-    public int cacheManagerMaxSuffix = 1000;
+    public int cacheManagerMaxSuffix = 10;
 
     private IList<ICacheOperationCounter> results;
 
